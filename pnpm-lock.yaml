@@ -1,0 +1,62 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    devDependencies:
+      '@gplassard/projen-extensions':
+        specifier: ^0.1.60
+        version: 0.1.60(constructs@10.7.0)(projen@0.101.16(constructs@10.7.0))
+      projen:
+        specifier: ^0.101.16
+        version: 0.101.16(constructs@10.7.0)
+
+packages:
+
+  '@gplassard/projen-extensions@0.1.60':
+    resolution: {integrity: sha512-jglWwzRMEV9ctlWPQqTor+BRmylnU4SRGJ5q/ey52kTXH9v1hStPcFWBqucshmg1fRQgt9oHkxI0eQMgg4jnQg==, tarball: https://npm.pkg.github.com/download/@gplassard/projen-extensions/0.1.60/e48f6a7bd1e0fa6b8dbfcb87b215cd2655efaa77}
+    peerDependencies:
+      constructs: ^10.6.0
+      projen: ^0.99.70
+
+  constructs@10.7.0:
+    resolution: {integrity: sha512-Vzwc30bMywc7DCzX8XOyuZbsBmfXTCrn6HHmhhELZK1J5dnUWwJ5uL7hBXGGq7xFPVOOO6cs9FwaxOshAxgcWQ==}
+
+  projen@0.101.16:
+    resolution: {integrity: sha512-vUyYtMthrcnQW4O48KgYaMfFCwi5yklkw3u3kdGQxmWKkPxfXIEhlpEfYWsGbUSp3qEuZBYsFfaj/N/e5mWbEw==}
+    engines: {node: '>= 16.0.0'}
+    hasBin: true
+    peerDependencies:
+      constructs: ^10.5.0
+    bundledDependencies:
+      - '@iarna/toml'
+      - case
+      - chalk
+      - comment-json
+      - conventional-changelog-config-spec
+      - dax
+      - fast-glob
+      - fast-json-patch
+      - ini
+      - parse-conflict-json
+      - semver
+      - xmlbuilder2
+      - yaml
+      - yargs
+
+snapshots:
+
+  '@gplassard/projen-extensions@0.1.60(constructs@10.7.0)(projen@0.101.16(constructs@10.7.0))':
+    dependencies:
+      constructs: 10.7.0
+      projen: 0.101.16(constructs@10.7.0)
+
+  constructs@10.7.0: {}
+
+  projen@0.101.16(constructs@10.7.0):
+    dependencies:
+      constructs: 10.7.0
