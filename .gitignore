@@ -16,3 +16,4 @@ node_modules/
 !/static-analysis.datadog.yaml
 !/.github/workflows/datadog-secret-scanning.yml
 !/.github/workflows/datadog-infra-as-code-security.yml
+!/.github/workflows/publish-plakar.yml

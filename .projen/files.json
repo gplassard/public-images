@@ -6,6 +6,7 @@
     ".github/workflows/datadog-software-composition-analysis.yml",
     ".github/workflows/datadog-static-analysis.yml",
     ".github/workflows/projen-synth.yml",
+    ".github/workflows/publish-plakar.yml",
     ".github/workflows/pull-request-lint.yml",
     ".github/workflows/upgrade-nodejs-dependencies.yml",
     ".gitignore",
