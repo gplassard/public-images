@@ -26,6 +26,12 @@ jobs:
       - name: Extract major version
         id: major
         run: echo "MAJOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E 's/^(v?[0-9]+).*/\1/')" >> $GITHUB_OUTPUT
+      - name: Read K8s version from file
+        id: k8s_version
+        run: echo "K8S_VERSION=$(cat k8s-version.txt)" >> $GITHUB_OUTPUT
+      - name: Read RClone version from file
+        id: rclone_version
+        run: echo "RCLONE_VERSION=$(cat rclone-version.txt)" >> $GITHUB_OUTPUT
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -33,6 +39,22 @@ jobs:
           repository: PlakarKorp/plakar
           ref: ${{ steps.tag.outputs.TAG }}
           path: plakar-src
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          repository: PlakarKorp/integrations
+          ref: ${{ steps.k8s_version.outputs.K8S_VERSION }}
+          path: integrations-k8s
+          sparseCheckout: k8s/k8s
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          repository: PlakarKorp/integrations
+          ref: ${{ steps.rclone_version.outputs.RCLONE_VERSION }}
+          path: integrations-rclone
+          sparseCheckout: rclone/rclone
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
