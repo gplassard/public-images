@@ -45,9 +45,19 @@ job.addJobs({
             run: 'echo "K8S_VERSION=$(cat k8s-version.txt)" >> $GITHUB_OUTPUT',
          },
          {
+            name: 'Extract K8s semver',
+            id: 'k8s_semver',
+            run: 'echo "K8S_SEMVER=$(echo ${{ steps.k8s_version.outputs.K8S_VERSION }} | sed -E \'s|.*/||\')" >> $GITHUB_OUTPUT',
+         },
+         {
             name: 'Read RClone version from file',
             id: 'rclone_version',
             run: 'echo "RCLONE_VERSION=$(cat rclone-version.txt)" >> $GITHUB_OUTPUT',
+         },
+         {
+            name: 'Extract RClone semver',
+            id: 'rclone_semver',
+            run: 'echo "RCLONE_SEMVER=$(echo ${{ steps.rclone_version.outputs.RCLONE_VERSION }} | sed -E \'s|.*/||")" >> $GITHUB_OUTPUT',
          },
           WorkflowActionsX.checkout({
             repository: 'PlakarKorp/plakar',
@@ -55,12 +65,20 @@ job.addJobs({
             path: 'plakar-src',
           }),
          {
+            name: 'Checkout hub recipes',
+            run: 'git clone --depth 1 https://github.com/PlakarKorp/hub.git hub',
+         },
+         {
             name: 'Checkout K8s integration',
             run: 'git clone --depth 1 --branch ${{ steps.k8s_version.outputs.K8S_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-k8s && cd integrations-k8s && git sparse-checkout init --cone && git sparse-checkout set k8s',
          },
          {
             name: 'Checkout RClone integration',
             run: 'git clone --depth 1 --branch ${{ steps.rclone_version.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone',
+         },
+         {
+            name: 'Copy recipe files',
+            run: 'cp hub/community/v1.1.0/k8s/recipe.yaml integrations-k8s/k8s/recipe.yaml && cp hub/community/v1.1.0/rclone/recipe.yaml integrations-rclone/rclone/recipe.yaml',
          },
          {
             name: 'Log in to GHCR',
@@ -81,6 +99,10 @@ job.addJobs({
                tags: `ghcr.io/\${{ github.repository }}/plakar:latest,
 ghcr.io/\${{ github.repository }}/plakar:\${{ steps.major.outputs.MAJOR }},
 ghcr.io/\${{ github.repository }}/plakar:\${{ steps.tag.outputs.TAG }}-\${{ steps.sha.outputs.SHORT_SHA }}`,
+               build_args: {
+                  K8S_VERSION: '${{ steps.k8s_semver.outputs.K8S_SEMVER }}',
+                  RCLONE_VERSION: '${{ steps.rclone_semver.outputs.RCLONE_SEMVER }}',
+               },
             },
          }
       ]
