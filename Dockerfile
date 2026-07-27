@@ -29,8 +29,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 COPY --from=plakar-builder /plakar /usr/local/bin/plakar
 
 # Copy integrations source
-COPY integrations-k8s/k8s/k8s /integrations/k8s
-COPY integrations-rclone/rclone/rclone /integrations/rclone
+COPY integrations-k8s/k8s /integrations/k8s
+COPY integrations-rclone/rclone /integrations/rclone
 
 # Build packages
 WORKDIR /integrations/k8s
