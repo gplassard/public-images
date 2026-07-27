@@ -56,11 +56,11 @@ job.addJobs({
           }),
          {
             name: 'Checkout K8s integration',
-            run: 'git clone --depth 1 --branch ${{ steps.k8s_version.outputs.K8S_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-k8s && cd integrations-k8s && git sparse-checkout init --cone && git sparse-checkout set k8s/k8s',
+            run: 'git clone --depth 1 --branch ${{ steps.k8s_version.outputs.K8S_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-k8s && cd integrations-k8s && git sparse-checkout init --cone && git sparse-checkout set k8s',
          },
          {
             name: 'Checkout RClone integration',
-            run: 'git clone --depth 1 --branch ${{ steps.rclone_version.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone/rclone',
+            run: 'git clone --depth 1 --branch ${{ steps.rclone_version.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone',
          },
          {
             name: 'Log in to GHCR',
