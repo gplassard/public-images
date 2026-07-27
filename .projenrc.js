@@ -60,12 +60,16 @@ job.addJobs({
             path: 'integrations-k8s',
             sparseCheckout: 'k8s/k8s',
           }),
-         WorkflowActionsX.checkout({
-            repository: 'PlakarKorp/integrations',
-            ref: '${{ steps.rclone_version.outputs.RCLONE_VERSION }}',
-            path: 'integrations-rclone',
-            sparseCheckout: 'rclone/rclone',
-          }),
+         {
+            name: 'Checkout RClone integration',
+            uses: 'actions/checkout@v4',
+            with: {
+               repository: 'PlakarKorp/integrations',
+               ref: '${{ steps.rclone_version.outputs.RCLONE_VERSION }}',
+               path: 'integrations-rclone',
+               sparsecheckout: 'rclone/rclone',
+            },
+         },
          {
             name: 'Log in to GHCR',
             uses: 'docker/login-action@v3',
