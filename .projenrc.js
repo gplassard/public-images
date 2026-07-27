@@ -54,21 +54,13 @@ job.addJobs({
             ref: '${{ steps.tag.outputs.TAG }}',
             path: 'plakar-src',
           }),
-         WorkflowActionsX.checkout({
-            repository: 'PlakarKorp/integrations',
-            ref: '${{ steps.k8s_version.outputs.K8S_VERSION }}',
-            path: 'integrations-k8s',
-            sparseCheckout: 'k8s/k8s',
-          }),
+         {
+            name: 'Checkout K8s integration',
+            run: 'git clone --depth 1 --branch ${{ steps.k8s_version.outputs.K8S_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-k8s && cd integrations-k8s && git sparse-checkout init --cone && git sparse-checkout set k8s/k8s',
+         },
          {
             name: 'Checkout RClone integration',
-            uses: 'actions/checkout@v4',
-            with: {
-               repository: 'PlakarKorp/integrations',
-               ref: '${{ steps.rclone_version.outputs.RCLONE_VERSION }}',
-               path: 'integrations-rclone',
-               sparsecheckout: 'rclone/rclone',
-            },
+            run: 'git clone --depth 1 --branch ${{ steps.rclone_version.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone/rclone',
          },
          {
             name: 'Log in to GHCR',
