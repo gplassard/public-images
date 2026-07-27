@@ -6,8 +6,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - plakar-tag.txt
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -19,15 +17,22 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
+      - name: Get short SHA
+        id: sha
+        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
       - name: Read tag from file
         id: tag
         run: echo "TAG=$(cat plakar-tag.txt)" >> $GITHUB_OUTPUT
+      - name: Extract major version
+        id: major
+        run: echo "MAJOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E 's/^(v?[0-9]+).*/\1/')" >> $GITHUB_OUTPUT
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
           repository: PlakarKorp/plakar
           ref: ${{ steps.tag.outputs.TAG }}
+          path: plakar-src
       - name: Log in to GHCR
         uses: docker/login-action@v3
         with:
@@ -40,6 +45,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: |
-            'ghcr.io/${{ github.repository }}/plakar:${{ steps.tag.outputs.TAG }}',
-            'ghcr.io/${{ github.repository }}/plakar:latest',
+          tags:
+            - ghcr.io/${{ github.repository }}/plakar:latest
+            - ghcr.io/${{ github.repository }}/plakar:${{ steps.major.outputs.MAJOR }}
+            - ghcr.io/${{ github.repository }}/plakar:${{ steps.tag.outputs.TAG }}-${{ steps.sha.outputs.SHORT_SHA }}
