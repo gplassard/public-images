@@ -60,11 +60,9 @@ job.addJobs({
                context: '.',
                file: './Dockerfile',
                push: true,
-               tags: [
-                  'ghcr.io/${{ github.repository }}/plakar:latest',
-                  'ghcr.io/${{ github.repository }}/plakar:${{ steps.major.outputs.MAJOR }}',
-                  'ghcr.io/${{ github.repository }}/plakar:${{ steps.tag.outputs.TAG }}-${{ steps.sha.outputs.SHORT_SHA }}',
-               ],
+               tags: `ghcr.io/\${{ github.repository }}/plakar:latest,
+ghcr.io/\${{ github.repository }}/plakar:\${{ steps.major.outputs.MAJOR }},
+ghcr.io/\${{ github.repository }}/plakar:\${{ steps.tag.outputs.TAG }}-\${{ steps.sha.outputs.SHORT_SHA }}`,
             },
          }
       ]
