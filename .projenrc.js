@@ -13,7 +13,6 @@ job.on({
    workflowDispatch: {},
    push: {
       branches: ['main'],
-      paths: ['plakar-tag.txt'],
    },
 });
 job.addJobs({
