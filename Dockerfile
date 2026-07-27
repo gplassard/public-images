@@ -19,25 +19,31 @@ COPY plakar-src/ .
 RUN CGO_ENABLED=0 go build -trimpath -v -o /plakar .
 
 # Stage 2: Build integration packages using plakar
-FROM debian:bookworm-slim AS pkg-builder
+FROM golang:1.25-bookworm AS pkg-builder
 
-# Install CA certificates and git for cloning
-RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git && \
+# Install CA certificates, git, and make
+RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git make && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy plakar binary from previous stage
 COPY --from=plakar-builder /plakar /usr/local/bin/plakar
 
+# Build arguments for integration versions
+ARG K8S_VERSION
+ARG RCLONE_VERSION
+
 # Copy integrations source
 COPY integrations-k8s/k8s /integrations/k8s
 COPY integrations-rclone/rclone /integrations/rclone
 
-# Build packages
+# Build packages - build each integration with make, then create package
 WORKDIR /integrations/k8s
-RUN plakar pkg build k8s
+RUN make && \
+    plakar pkg create /integrations/k8s/manifest.yaml ${K8S_VERSION}
 
 WORKDIR /integrations/rclone
-RUN plakar pkg build rclone
+RUN make && \
+    plakar pkg create /integrations/rclone/manifest.yaml ${RCLONE_VERSION}
 
 # Add packages to plakar
 WORKDIR /
