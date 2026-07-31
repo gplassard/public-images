@@ -37,7 +37,7 @@ job.addJobs({
          {
             name: 'Extract major version',
             id: 'major',
-            run: 'echo "MAJOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E \"s/^(v?[0-9]+).*/\\1/\")" >> $GITHUB_OUTPUT',
+            run: 'echo "MAJOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E \'s/^(v?[0-9]+).*/\\1/\')" >> "$GITHUB_OUTPUT"',
          },
          {
             name: 'Read K8s version from file',
@@ -47,7 +47,7 @@ job.addJobs({
          {
             name: 'Extract K8s semver',
             id: 'k8s_semver',
-            run: 'echo "K8S_SEMVER=$(echo ${{ steps.k8s_version.outputs.K8S_VERSION }} | sed -E "s|.*/||" >> $GITHUB_OUTPUT',
+            run: 'echo "K8S_SEMVER=$(echo ${{ steps.k8s_version.outputs.K8S_VERSION }} | sed -E \'s|.*/||\')" >> "$GITHUB_OUTPUT"',
          },
          {
             name: 'Read RClone version from file',
@@ -57,7 +57,7 @@ job.addJobs({
          {
             name: 'Extract RClone semver',
             id: 'rclone_semver',
-            run: 'echo "RCLONE_SEMVER=$(echo ${{ steps.rclone_version.outputs.RCLONE_VERSION }} | sed -E "s|.*/||" >> $GITHUB_OUTPUT',
+            run: 'echo "RCLONE_SEMVER=$(echo ${{ steps.rclone_version.outputs.RCLONE_VERSION }} | sed -E \'s|.*/||\')" >> "$GITHUB_OUTPUT"',
          },
           WorkflowActionsX.checkout({
             repository: 'PlakarKorp/plakar',
