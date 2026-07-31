@@ -45,11 +45,6 @@ WORKDIR /integrations/rclone
 RUN make && \
     plakar pkg create /integrations/rclone/manifest.yaml ${RCLONE_VERSION}
 
-# Add packages to plakar
-WORKDIR /
-RUN plakar pkg add ./k8s_*_linux_amd64.ptar && \
-    plakar pkg add ./rclone_*_linux_amd64.ptar
-
 # Stage 3: Runtime - using lightweight Debian
 FROM debian:bookworm-slim
 
@@ -57,12 +52,19 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user
-RUN groupadd -r plakar && useradd -r -g plakar -d /home/plakar -s /bin/false plakar
+# Create non-root user and its package-store home directory
+RUN groupadd -r plakar && useradd -r -m -g plakar -d /home/plakar -s /bin/false plakar
 
 COPY --from=pkg-builder /usr/local/bin/plakar /usr/local/bin/plakar
+ARG K8S_VERSION
+ARG RCLONE_VERSION
+COPY --from=pkg-builder --chown=plakar:plakar /integrations/k8s/k8s_${K8S_VERSION}_linux_amd64.ptar /tmp/plakar-packages/
+COPY --from=pkg-builder --chown=plakar:plakar /integrations/rclone/rclone_${RCLONE_VERSION}_linux_amd64.ptar /tmp/plakar-packages/
 
 USER plakar
 WORKDIR /home/plakar
+RUN plakar pkg add /tmp/plakar-packages/k8s_${K8S_VERSION}_linux_amd64.ptar && \
+    plakar pkg add /tmp/plakar-packages/rclone_${RCLONE_VERSION}_linux_amd64.ptar && \
+    rm -rf /tmp/plakar-packages
 
 ENTRYPOINT ["plakar"]
