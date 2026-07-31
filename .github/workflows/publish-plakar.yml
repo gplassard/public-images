@@ -26,6 +26,9 @@ jobs:
       - name: Extract major version
         id: major
         run: echo "MAJOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E 's/^(v?[0-9]+).*/\1/')" >> "$GITHUB_OUTPUT"
+      - name: Extract minor version
+        id: minor
+        run: echo "MINOR=$(echo ${{ steps.tag.outputs.TAG }} | sed -E 's/^(v?[0-9]+\.[0-9]+).*/\1/')" >> "$GITHUB_OUTPUT"
       - name: Read K8s version from file
         id: k8s_version
         run: echo "K8S_VERSION=$(cat k8s-version.txt)" >> $GITHUB_OUTPUT
@@ -68,6 +71,8 @@ jobs:
           tags: |-
             ghcr.io/${{ github.repository }}/plakar:latest,
             ghcr.io/${{ github.repository }}/plakar:${{ steps.major.outputs.MAJOR }},
+            ghcr.io/${{ github.repository }}/plakar:${{ steps.minor.outputs.MINOR }},
+            ghcr.io/${{ github.repository }}/plakar:${{ steps.tag.outputs.TAG }},
             ghcr.io/${{ github.repository }}/plakar:${{ steps.tag.outputs.TAG }}-${{ steps.sha.outputs.SHORT_SHA }}
           build-args: |-
             K8S_VERSION=${{ steps.k8s_semver.outputs.K8S_SEMVER }}
