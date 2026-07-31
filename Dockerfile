@@ -48,12 +48,16 @@ RUN make && \
 # Stage 3: Runtime - using lightweight Debian
 FROM debian:bookworm-slim
 
+ARG PLAKAR_UID=10001
+ARG PLAKAR_GID=10001
+
 # Install CA certificates for HTTPS connections
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
-# Create non-root user and its package-store home directory
-RUN groupadd -r plakar && useradd -r -m -g plakar -d /home/plakar -s /bin/false plakar
+# Create a stable non-root identity shared with the Kubernetes security context.
+RUN groupadd --gid "${PLAKAR_GID}" plakar && \
+    useradd --uid "${PLAKAR_UID}" --gid plakar --create-home --home-dir /home/plakar --shell /usr/sbin/nologin plakar
 
 COPY --from=pkg-builder /usr/local/bin/plakar /usr/local/bin/plakar
 ARG K8S_VERSION
