@@ -99,7 +99,7 @@ job.addJobs({
                tags: `ghcr.io/\${{ github.repository }}/plakar:latest,
 ghcr.io/\${{ github.repository }}/plakar:\${{ steps.major.outputs.MAJOR }},
 ghcr.io/\${{ github.repository }}/plakar:\${{ steps.tag.outputs.TAG }}-\${{ steps.sha.outputs.SHORT_SHA }}`,
-               build_args: `K8S_VERSION=\${{ steps.k8s_semver.outputs.K8S_SEMVER }}\nRCLONE_VERSION=\${{ steps.rclone_semver.outputs.RCLONE_SEMVER }}`,
+               'build-args': `K8S_VERSION=\${{ steps.k8s_semver.outputs.K8S_SEMVER }}\nRCLONE_VERSION=\${{ steps.rclone_semver.outputs.RCLONE_SEMVER }}`,
             },
          },
       ]
