@@ -14,6 +14,7 @@ jobs:
       packages: write
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
@@ -42,6 +43,7 @@ jobs:
         id: rclone_semver
         run: echo "RCLONE_SEMVER=$(echo ${{ steps.rclone_version.outputs.RCLONE_VERSION }} | sed -E 's|.*/||')" >> "$GITHUB_OUTPUT"
       - name: Checkout
+        id: checkout_2
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
@@ -49,20 +51,26 @@ jobs:
           ref: ${{ steps.tag.outputs.TAG }}
           path: plakar-src
       - name: Checkout hub recipes
+        id: checkout_hub_recipes
         run: git clone --depth 1 https://github.com/PlakarKorp/hub.git hub
       - name: Checkout K8s integration
+        id: checkout_k8s_integration
         run: git clone --depth 1 --branch ${{ steps.k8s_version.outputs.K8S_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-k8s && cd integrations-k8s && git sparse-checkout init --cone && git sparse-checkout set k8s
       - name: Checkout RClone integration
+        id: checkout_rclone_integration
         run: git clone --depth 1 --branch ${{ steps.rclone_version.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone
       - name: Copy recipe files
+        id: copy_recipe_files
         run: cp hub/community/v1.1.0/k8s/recipe.yaml integrations-k8s/k8s/recipe.yaml && cp hub/community/v1.1.0/rclone/recipe.yaml integrations-rclone/rclone/recipe.yaml
       - name: Log in to GHCR
+        id: log_in_to_ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
+        id: build_and_push_docker_image
         uses: docker/build-push-action@v5
         with:
           context: .
