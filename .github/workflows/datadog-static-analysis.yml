@@ -10,10 +10,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
       - name: Check code meets quality and security standards
+        id: check_code_meets_quality_and_security_standards
         uses: DataDog/datadog-static-analyzer-github-action@506d966f01f45874d7a53d00a0c300f650e91e39
         with:
           dd_app_key: ${{ secrets.DD_APP_KEY }}

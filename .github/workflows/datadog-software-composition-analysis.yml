@@ -10,10 +10,12 @@ jobs:
       contents: read
     steps:
       - name: Checkout
+        id: checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           fetch-depth: 0
       - name: Check imported libraries are secure and compliant
+        id: check_imported_libraries_are_secure_and_compliant
         uses: DataDog/datadog-sca-github-action@d871ffeaa1a9693e935d5e66f7440782320e74ea
         with:
           dd_app_key: ${{ secrets.DD_APP_KEY }}
