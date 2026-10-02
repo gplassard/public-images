@@ -104,4 +104,88 @@ prBuild.addJobs({
       ],
    },
 });
+
+const updatePlakarIntegrations = new GithubWorkflow(github, 'update-plakar-integrations', {
+   name: 'Update Plakar and integrations',
+});
+updatePlakarIntegrations.on({
+   workflowDispatch: {},
+   schedule: [{ cron: '0 9 1 * *' }],
+});
+updatePlakarIntegrations.addJobs({
+   update: {
+      runsOn: 'ubuntu-latest',
+      permissions: {
+         contents: 'write',
+         'pull-requests': 'write',
+      },
+      steps: [
+         WorkflowActionsX.checkout({}),
+         {
+            name: 'Find latest stable releases',
+            id: 'versions',
+            shell: 'bash',
+            run: `set -euo pipefail
+
+latest_tag() {
+   local repository="$1"
+   local prefix="$2"
+   git ls-remote --tags --refs "https://github.com/\${repository}.git" "refs/tags/\${prefix}*" \\
+      | sed 's#.*refs/tags/##' \\
+      | grep -E "^\${prefix}[0-9]+\\.[0-9]+\\.[0-9]+$" \\
+      | sort -V \\
+      | tail -n 1
+}
+
+plakar_tag="$(latest_tag PlakarKorp/plakar v)"
+k8s_version="$(latest_tag PlakarKorp/integrations k8s/v)"
+rclone_version="$(latest_tag PlakarKorp/integrations rclone/v)"
+
+for version in "$plakar_tag" "$k8s_version" "$rclone_version"; do
+   if [[ -z "$version" ]]; then
+      echo 'Could not find all three latest stable release tags.' >&2
+      exit 1
+   fi
+done
+
+printf '%s\\n' "$plakar_tag" > plakar-tag.txt
+printf '%s\\n' "$k8s_version" > k8s-version.txt
+printf '%s\\n' "$rclone_version" > rclone-version.txt
+
+echo "plakar_tag=$plakar_tag" >> "$GITHUB_OUTPUT"
+echo "k8s_version=$k8s_version" >> "$GITHUB_OUTPUT"
+echo "rclone_version=$rclone_version" >> "$GITHUB_OUTPUT"`,
+         },
+         {
+            ...WorkflowActionsX.generateGithubToken({
+               permissions: {
+                  'permission-contents': 'write',
+                  'permission-pull-requests': 'write',
+               },
+            }),
+         },
+         {
+            name: 'Create or update pull request',
+            uses: githubAction('peter-evans/create-pull-request'),
+            with: {
+               token: '${{ steps.generate_token.outputs.token }}',
+               branch: 'github-actions/update-plakar-integrations',
+               'delete-branch': true,
+               'commit-message': 'chore(deps): update Plakar and integrations',
+               title: 'chore(deps): update Plakar and integrations',
+               body: `Updates the pinned stable releases of Plakar and its Kubernetes and rclone integrations.
+
+- Plakar: \u0060\${{ steps.versions.outputs.plakar_tag }}\u0060
+- Kubernetes integration: \u0060\${{ steps.versions.outputs.k8s_version }}\u0060
+- rclone integration: \u0060\${{ steps.versions.outputs.rclone_version }}\u0060
+
+The workflow checked the latest stable release tags before opening this pull request.
+
+[Workflow run](\${{ github.server_url }}/\${{ github.repository }}/actions/runs/\${{ github.run_id }})`,
+            },
+         },
+      ],
+   },
+});
+
 project.synth();

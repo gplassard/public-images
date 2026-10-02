@@ -19,3 +19,4 @@ node_modules/
 !/.github/workflows/datadog-infra-as-code-security.yml
 !/.github/workflows/publish-plakar.yml
 !/.github/workflows/build.yml
+!/.github/workflows/update-plakar-integrations.yml
