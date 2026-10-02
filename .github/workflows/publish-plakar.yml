@@ -14,7 +14,8 @@ jobs:
       packages: write
     steps:
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        id: checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
       - name: Get short SHA
@@ -30,12 +31,14 @@ jobs:
         id: minor
         run: echo "MINOR=$(echo ${{ steps.prepare.outputs.plakar_tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+).*/\1/')" >> "$GITHUB_OUTPUT"
       - name: Log in to GHCR
+        id: log_in_to_ghcr
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
+        id: build_and_push_docker_image
         uses: docker/build-push-action@v5
         with:
           context: .
