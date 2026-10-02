@@ -9,6 +9,7 @@
     ".github/workflows/projen-synth.yml",
     ".github/workflows/publish-plakar.yml",
     ".github/workflows/pull-request-lint.yml",
+    ".github/workflows/update-plakar-integrations.yml",
     ".github/workflows/upgrade-nodejs-dependencies.yml",
     ".gitignore",
     ".projen/deps.json",
