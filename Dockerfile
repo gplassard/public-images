@@ -4,7 +4,7 @@
 # Integrations are expected in integrations-k8s and integrations-rclone directories
 
 # Stage 1: Build plakar binary
-FROM golang:1.26-bookworm AS plakar-builder
+FROM golang:1.27-bookworm AS plakar-builder
 
 WORKDIR /src
 
@@ -19,7 +19,7 @@ COPY plakar-src/ .
 RUN CGO_ENABLED=0 go build -trimpath -v -o /plakar .
 
 # Stage 2: Build integration packages using plakar
-FROM golang:1.26-bookworm AS pkg-builder
+FROM golang:1.27-bookworm AS pkg-builder
 
 # Install CA certificates, git, and make
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates git make && \
@@ -67,8 +67,8 @@ COPY --from=pkg-builder --chown=plakar:plakar /integrations/rclone/rclone_${RCLO
 
 USER plakar
 WORKDIR /home/plakar
-RUN plakar pkg add /tmp/plakar-packages/k8s_${K8S_VERSION}_linux_amd64.ptar && \
-    plakar pkg add /tmp/plakar-packages/rclone_${RCLONE_VERSION}_linux_amd64.ptar && \
+RUN plakar pkg add -allow-unsigned /tmp/plakar-packages/k8s_${K8S_VERSION}_linux_amd64.ptar && \
+    plakar pkg add -allow-unsigned /tmp/plakar-packages/rclone_${RCLONE_VERSION}_linux_amd64.ptar && \
     rm -rf /tmp/plakar-packages
 
 ENTRYPOINT ["plakar"]
