@@ -1,1 +1,1 @@
-rclone/v1.1.0
+rclone/v1.1.2
