@@ -32,14 +32,14 @@ jobs:
         run: echo "MINOR=$(echo ${{ steps.prepare.outputs.plakar_tag }} | sed -E 's/^(v?[0-9]+\.[0-9]+).*/\1/')" >> "$GITHUB_OUTPUT"
       - name: Log in to GHCR
         id: log_in_to_ghcr
-        uses: docker/login-action@v3
+        uses: docker/login-action@9780b0c442fbb1117ed29e0efdff1e18412f7567
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
       - name: Build and push Docker image
         id: build_and_push_docker_image
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@2cdde995de11925a030ce8070c3d77a52ffcf1c0
         with:
           context: .
           file: ./Dockerfile
