@@ -5,10 +5,10 @@ outputs:
     description: Plakar source tag.
     value: ${{ steps.versions.outputs.PLAKAR_TAG }}
   k8s_version:
-    description: Kubernetes integration package version.
+    description: Kubernetes integration commit ref.
     value: ${{ steps.versions.outputs.K8S_VERSION }}
   k8s_semver:
-    description: Kubernetes integration commit SHA used as its package version.
+    description: Kubernetes integration version used by the Dockerfile.
     value: ${{ steps.versions.outputs.K8S_SEMVER }}
   rclone_version:
     description: Rclone integration ref.
@@ -40,7 +40,20 @@ runs:
       run: git clone --depth 1 https://github.com/PlakarKorp/hub.git hub
     - name: Checkout pinned K8s integration commit
       shell: bash
-      run: git init integrations-k8s && cd integrations-k8s && git remote add origin https://github.com/gplassard/plakar-integrations.git && git fetch --depth 1 origin ${{ steps.versions.outputs.K8S_VERSION }} && git checkout --detach FETCH_HEAD && git sparse-checkout init --cone && git sparse-checkout set k8s
+      env:
+        K8S_VERSION: ${{ steps.versions.outputs.K8S_VERSION }}
+      run: |
+        git init integrations-k8s
+        cd integrations-k8s
+        git remote add origin https://github.com/gplassard/plakar-integrations.git
+        if [[ "$K8S_VERSION" =~ ^[0-9a-f]{40}$ ]]; then
+          git fetch --depth 1 origin "$K8S_VERSION"
+        else
+          git fetch --depth 1 origin HEAD
+        fi
+        git checkout --detach FETCH_HEAD
+        git sparse-checkout init --cone
+        git sparse-checkout set k8s
     - name: Checkout RClone integration
       shell: bash
       run: git clone --depth 1 --branch ${{ steps.versions.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone
