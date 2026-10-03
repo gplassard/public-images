@@ -33,12 +33,12 @@ jobs:
           }
 
           plakar_tag="$(latest_tag PlakarKorp/plakar v)"
-          k8s_version="$(latest_tag PlakarKorp/integrations k8s/v)"
           rclone_version="$(latest_tag PlakarKorp/integrations rclone/v)"
+          k8s_version="$(git ls-remote https://github.com/gplassard/plakar-integrations.git HEAD | cut -f1)"
 
           for version in "$plakar_tag" "$k8s_version" "$rclone_version"; do
              if [[ -z "$version" ]]; then
-                echo 'Could not find all three latest stable release tags.' >&2
+                echo 'Could not find the latest Plakar release, Kubernetes integration commit, and rclone release.' >&2
                 exit 1
              fi
           done
@@ -72,9 +72,9 @@ jobs:
             Updates the pinned stable releases of Plakar and its Kubernetes and rclone integrations.
 
             - Plakar: `${{ steps.versions.outputs.plakar_tag }}`
-            - Kubernetes integration: `${{ steps.versions.outputs.k8s_version }}`
+            - Kubernetes integration commit: `${{ steps.versions.outputs.k8s_version }}`
             - rclone integration: `${{ steps.versions.outputs.rclone_version }}`
 
-            The workflow checked the latest stable release tags before opening this pull request.
+            The workflow checked the latest Plakar and rclone stable release tags and the latest Kubernetes integration commit before opening this pull request.
 
             [Workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})
