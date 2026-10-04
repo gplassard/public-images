@@ -8,7 +8,7 @@ outputs:
     description: Kubernetes integration commit ref.
     value: ${{ steps.versions.outputs.K8S_VERSION }}
   k8s_semver:
-    description: Kubernetes integration version used by the Dockerfile.
+    description: Kubernetes integration package version used by the Dockerfile.
     value: ${{ steps.versions.outputs.K8S_SEMVER }}
   rclone_version:
     description: Rclone integration ref.
@@ -25,7 +25,7 @@ runs:
       run: |
         echo "PLAKAR_TAG=$(cat plakar-tag.txt)" >> "$GITHUB_OUTPUT"
         echo "K8S_VERSION=$(cat k8s-version.txt)" >> "$GITHUB_OUTPUT"
-        echo "K8S_SEMVER=$(sed -E 's|.*/||' k8s-version.txt)" >> "$GITHUB_OUTPUT"
+        echo "K8S_SEMVER=$(cat k8s-package-version.txt)" >> "$GITHUB_OUTPUT"
         echo "RCLONE_VERSION=$(cat rclone-version.txt)" >> "$GITHUB_OUTPUT"
         echo "RCLONE_SEMVER=$(sed -E 's|.*/||' rclone-version.txt)" >> "$GITHUB_OUTPUT"
     - name: Checkout Plakar source
