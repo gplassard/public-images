@@ -33,11 +33,10 @@ jobs:
           }
 
           plakar_tag="$(latest_tag PlakarKorp/plakar v)"
-          rclone_package_version="$(latest_tag PlakarKorp/integrations rclone/v)"
+          rclone_version="$(latest_tag PlakarKorp/integrations rclone/v)"
           k8s_version="$(git ls-remote https://github.com/gplassard/plakar-integrations.git HEAD | cut -f1)"
-          rclone_version="$k8s_version"
 
-          for version in "$plakar_tag" "$k8s_version" "$rclone_package_version"; do
+          for version in "$plakar_tag" "$k8s_version" "$rclone_version"; do
              if [[ -z "$version" ]]; then
                 echo 'Could not find the latest Plakar release, Kubernetes integration commit, and rclone release.' >&2
                 exit 1
@@ -47,7 +46,6 @@ jobs:
           printf '%s\n' "$plakar_tag" > plakar-tag.txt
           printf '%s\n' "$k8s_version" > k8s-version.txt
           printf '%s\n' "$rclone_version" > rclone-version.txt
-          printf '%s\n' "$rclone_package_version" > rclone-package-version.txt
 
           echo "plakar_tag=$plakar_tag" >> "$GITHUB_OUTPUT"
           echo "k8s_version=$k8s_version" >> "$GITHUB_OUTPUT"
