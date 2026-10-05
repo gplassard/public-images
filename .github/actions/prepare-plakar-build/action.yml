@@ -27,7 +27,7 @@ runs:
         echo "K8S_VERSION=$(cat k8s-version.txt)" >> "$GITHUB_OUTPUT"
         echo "K8S_SEMVER=$(cat k8s-package-version.txt)" >> "$GITHUB_OUTPUT"
         echo "RCLONE_VERSION=$(cat rclone-version.txt)" >> "$GITHUB_OUTPUT"
-        echo "RCLONE_SEMVER=$(sed -E 's|.*/||' rclone-version.txt)" >> "$GITHUB_OUTPUT"
+        echo "RCLONE_SEMVER=$(cat rclone-package-version.txt)" >> "$GITHUB_OUTPUT"
     - name: Checkout Plakar source
       uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
       with:
@@ -54,9 +54,22 @@ runs:
         git checkout --detach FETCH_HEAD
         git sparse-checkout init --cone
         git sparse-checkout set k8s
-    - name: Checkout RClone integration
+    - name: Checkout pinned RClone integration commit
       shell: bash
-      run: git clone --depth 1 --branch ${{ steps.versions.outputs.RCLONE_VERSION }} https://github.com/PlakarKorp/integrations.git integrations-rclone && cd integrations-rclone && git sparse-checkout init --cone && git sparse-checkout set rclone
+      env:
+        RCLONE_VERSION: ${{ steps.versions.outputs.RCLONE_VERSION }}
+      run: |
+        git init integrations-rclone
+        cd integrations-rclone
+        git remote add origin https://github.com/gplassard/plakar-integrations.git
+        if [[ "$RCLONE_VERSION" =~ ^[0-9a-f]{40}$ ]]; then
+          git fetch --depth 1 origin "$RCLONE_VERSION"
+        else
+          git fetch --depth 1 origin HEAD
+        fi
+        git checkout --detach FETCH_HEAD
+        git sparse-checkout init --cone
+        git sparse-checkout set rclone
     - name: Copy recipe files
       shell: bash
       run: cp hub/community/v1.1.0/k8s/recipe.yaml integrations-k8s/k8s/recipe.yaml && cp hub/community/v1.1.0/rclone/recipe.yaml integrations-rclone/rclone/recipe.yaml
