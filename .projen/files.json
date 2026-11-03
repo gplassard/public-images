@@ -1,5 +1,7 @@
 {
   "files": [
+    ".devcontainer/devcontainer-lock.json",
+    ".devcontainer/devcontainer.json",
     ".gitattributes",
     ".github/workflows/build.yml",
     ".github/workflows/datadog-infra-as-code-security.yml",
